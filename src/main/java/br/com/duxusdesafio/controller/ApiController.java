@@ -29,6 +29,7 @@ public class ApiController {
   @Autowired
   TimeRepository timeRepository;
 
+
   @GetMapping("/timeDaData")
   public ResponseEntity<?> getTimeDaData(@RequestParam int dia,
                                          @RequestParam int mes,
@@ -77,5 +78,45 @@ public class ApiController {
     response.setFranquia(integrante.getFranquia());
 
     return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/integrantesDoTimeMaisComum")
+  public ResponseEntity<?> getIntegrantesDoTimeMaisComum(
+      @RequestParam String dataInicial,
+      @RequestParam String dataFinal) {
+
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    LocalDate inicio = LocalDate.parse(dataInicial, formatter);
+    LocalDate fim = LocalDate.parse(dataFinal, formatter);
+
+    List<Time> todosOsTimes = timeRepository.findAll();
+
+    List<String> integrantesDoTimeMaisComum = apiService.integrantesDoTimeMaisComum(inicio, fim, todosOsTimes);
+    Integrante integrante = apiService.integranteMaisUsado(inicio, fim, todosOsTimes);
+
+
+    IntegrantesResponse response = new IntegrantesResponse();
+    response.setNome(integrante.getNome());
+    response.setFuncao(integrante.getFuncao());
+    response.setFranquia(integrante.getFranquia());
+
+    return ResponseEntity.ok(integrantesDoTimeMaisComum);
+  }
+
+  @GetMapping("/funcaoMaisComum")
+  public ResponseEntity<?> getFuncaoMaisComum(
+      @RequestParam String dataInicial,
+      @RequestParam String dataFinal) {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    LocalDate inicio = LocalDate.parse(dataInicial, formatter);
+    LocalDate fim = LocalDate.parse(dataFinal, formatter);
+
+    List<Time> todosOsTimes = timeRepository.findAll();
+
+    String funcao = apiService.funcaoMaisComum(inicio, fim, todosOsTimes);
+
+    return ResponseEntity.ok(funcao);
   }
 }
