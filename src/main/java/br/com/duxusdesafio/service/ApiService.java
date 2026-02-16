@@ -1,10 +1,15 @@
 package br.com.duxusdesafio.service;
 
+import br.com.duxusdesafio.model.ComposicaoTime;
 import br.com.duxusdesafio.model.Integrante;
 import br.com.duxusdesafio.model.Time;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -47,8 +52,34 @@ public class ApiService {
    * dentro do período
    */
   public Integrante integranteMaisUsado(LocalDate dataInicial, LocalDate dataFinal, List<Time> todosOsTimes) {
-    // TODO Implementar método seguindo as instruções!
-    return null;
+    //preciso filtrar datas válidas, período informado e composições de times
+    if (todosOsTimes == null) {
+      throw new IllegalArgumentException("Lista de times não pode ser nula");
+    }
+    Map<Integrante, Integer> contagem = new HashMap<>(); // Mapa para contar a frequência de cada integrante
+    for (Time time : filtrarTimesPorPeriodo(dataInicial, dataFinal, todosOsTimes)) {
+
+      if (time.getComposicaoTime() == null)
+        continue;
+
+      for (ComposicaoTime composicao : time.getComposicaoTime()) {
+        Integrante integrante = composicao.getIntegrante();
+        if (integrante == null)
+          continue;
+        contagem.put(integrante, contagem.getOrDefault(integrante, 0) + 1); // Incrementa a contagem para o integrante
+      }
+    }
+    Integrante maisUsado = null;
+    int maiorContagem = 0;
+
+    for (Map.Entry<Integrante, Integer> entry : contagem.entrySet()) {
+      if (entry.getValue() > maiorContagem) {
+        maiorContagem = entry.getValue();
+        maisUsado = entry.getKey();
+      }
+    }
+
+    return maisUsado;
   }
 
   /**
@@ -56,8 +87,46 @@ public class ApiService {
    * dentro do período
    */
   public List<String> integrantesDoTimeMaisComum(LocalDate dataInicial, LocalDate dataFinal, List<Time> todosOsTimes) {
-    // TODO Implementar método seguindo as instruções!
-    return null;
+    if (todosOsTimes == null) {
+      throw new IllegalArgumentException("Lista de times não pode ser nula");
+    }
+
+    Map<String, Integer> contagem = new HashMap<>();
+
+    for (Time time : filtrarTimesPorPeriodo(dataInicial, dataFinal, todosOsTimes)) {
+
+      if (time.getComposicaoTime() == null)
+        continue;
+
+      List<String> nomes = new ArrayList<>();
+
+      for (ComposicaoTime composicaoTime : time.getComposicaoTime()) {
+        if (composicaoTime.getIntegrante() != null) {
+          nomes.add(composicaoTime.getIntegrante().getNome());
+        }
+      }
+
+      Collections.sort(nomes);
+
+      String chave = String.join("|", nomes);
+
+      contagem.put(chave, contagem.getOrDefault(chave, 0) + 1);
+    }
+
+    String timeMaisComum = null;
+    int maiorContagem = 0;
+
+    for (Map.Entry<String, Integer> entry : contagem.entrySet()) {
+      if (entry.getValue() > maiorContagem) {
+        maiorContagem = entry.getValue();
+        timeMaisComum = entry.getKey();
+      }
+    }
+
+    if (timeMaisComum == null)
+      return null;
+
+    return Arrays.asList(timeMaisComum.split("\\|"));
   }
 
   /**
