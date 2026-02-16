@@ -1,6 +1,8 @@
 package br.com.duxusdesafio.controller;
 
 import br.com.duxusdesafio.controller.request.CadastroTimeRequest;
+import br.com.duxusdesafio.service.TimeService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,14 +15,19 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/times")
 public class TimeController {
 
-  //@Autowired
-  //private final TimeService timeService;
+  @Autowired
+  private final TimeService timeService;
+
+  public TimeController(TimeService timeService) {
+    this.timeService = timeService;
+  }
+
   //TODO: Implementar os endpoints para criar, listar, atualizar e deletar times
 
   @PostMapping("/cadastroTime")
   public ResponseEntity<?> cadastroDeTime(@RequestBody CadastroTimeRequest time) {
-//    return ResponseEntity.ok(timeService.criar(time));
-    return ResponseEntity.ok("test.criar(time)");
+    timeService.cadastrarTime(time.getNomeTime(), time.getData());
+    return ResponseEntity.ok("Time salvo com sucesso!");
   }
 
   @DeleteMapping("/removerTime/{id}")
