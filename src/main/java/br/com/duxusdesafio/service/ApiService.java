@@ -26,7 +26,19 @@ import java.util.Map;
 public class ApiService {
 
   private List<Time> filtrarTimesPorPeriodo(LocalDate dataInicio, LocalDate dataFim, List<Time> todosOsTimes) {
-    return null;
+    List<Time> filtrados = new ArrayList<>();
+
+    for (Time t : todosOsTimes) {
+      if (t.getData() == null)
+        continue;
+
+      LocalDate data = t.getData();
+
+      if (!data.isBefore(dataInicio) && !data.isAfter(dataFim)) {
+        filtrados.add(t);
+      }
+    }
+    return filtrados;
   }
 
   /**
@@ -46,7 +58,6 @@ public class ApiService {
         .orElse(null);
   }
 
-
   /**
    * Vai retornar o integrante que estiver presente na maior quantidade de times
    * dentro do período
@@ -57,25 +68,37 @@ public class ApiService {
       throw new IllegalArgumentException("Lista de times não pode ser nula");
     }
     Map<Integrante, Integer> contagem = new HashMap<>(); // Mapa para contar a frequência de cada integrante
-    for (Time time : filtrarTimesPorPeriodo(dataInicial, dataFinal, todosOsTimes)) {
 
-      if (time.getComposicaoTime() == null)
-        continue;
+    List<Time> filtrados = filtrarTimesPorPeriodo(dataInicial, dataFinal, todosOsTimes);
 
-      for (ComposicaoTime composicao : time.getComposicaoTime()) {
-        Integrante integrante = composicao.getIntegrante();
-        if (integrante == null)
+      if (filtrados == null)
+        return null;
+
+      for (Time time : filtrados) {
+
+        if (time.getComposicaoTime() == null)
           continue;
-        contagem.put(integrante, contagem.getOrDefault(integrante, 0) + 1); // Incrementa a contagem para o integrante
+
+        for(ComposicaoTime composicaoTime : time.getComposicaoTime()) {
+          Integrante player1 = composicaoTime.getIntegrante();
+          if (player1 == null)
+            continue;
+          contagem.put(player1, contagem.getOrDefault(player1, 0) + 1);
       }
     }
     Integrante maisUsado = null;
-    int maiorContagem = 0;
+    int maiorContagem = -1;
 
     for (Map.Entry<Integrante, Integer> entry : contagem.entrySet()) {
-      if (entry.getValue() > maiorContagem) {
-        maiorContagem = entry.getValue();
-        maisUsado = entry.getKey();
+      Integrante atual = entry.getKey();
+      int valor = entry.getValue();
+
+      if (valor > maiorContagem ||
+          (valor == maiorContagem && maisUsado != null &&
+              atual.getNome().compareTo(maisUsado.getNome()) < 0)) {
+
+        maiorContagem = valor;
+        maisUsado = atual;
       }
     }
 
@@ -90,11 +113,8 @@ public class ApiService {
     if (todosOsTimes == null) {
       throw new IllegalArgumentException("Lista de times não pode ser nula");
     }
-
     Map<String, Integer> contagem = new HashMap<>();
-
     for (Time time : filtrarTimesPorPeriodo(dataInicial, dataFinal, todosOsTimes)) {
-
       if (time.getComposicaoTime() == null)
         continue;
 
@@ -107,9 +127,7 @@ public class ApiService {
       }
 
       Collections.sort(nomes);
-
       String chave = String.join("|", nomes);
-
       contagem.put(chave, contagem.getOrDefault(chave, 0) + 1);
     }
 
@@ -133,7 +151,11 @@ public class ApiService {
    * Vai retornar a função mais comum nos times dentro do período
    */
   public String funcaoMaisComum(LocalDate dataInicial, LocalDate dataFinal, List<Time> todosOsTimes) {
-    // TODO Implementar método seguindo as instruções!
+    // preciso retornar a função mais comum nos times dentro do período
+    if (todosOsTimes == null) {
+      throw new IllegalArgumentException ("Lista de times não pode ser nula!");
+    }
+
     return null;
   }
 
