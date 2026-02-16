@@ -28,6 +28,9 @@ public class ApiService {
   private List<Time> filtrarTimesPorPeriodo(LocalDate dataInicio, LocalDate dataFim, List<Time> todosOsTimes) {
     List<Time> filtrados = new ArrayList<>();
 
+    if (todosOsTimes == null)
+      return filtrados;
+
     for (Time t : todosOsTimes) {
       if (t.getData() == null)
         continue;
@@ -155,8 +158,41 @@ public class ApiService {
     if (todosOsTimes == null) {
       throw new IllegalArgumentException ("Lista de times não pode ser nula!");
     }
+    Map<String, Integer> contagem = new HashMap<>();
+    List<Time> timesFiltrados = filtrarTimesPorPeriodo(dataInicial, dataFinal, todosOsTimes);
 
-    return null;
+    if (timesFiltrados == null || timesFiltrados.isEmpty())
+      return null;
+
+    for (Time time : timesFiltrados) {
+
+      if (time.getComposicaoTime() == null)
+        continue;
+
+      for (ComposicaoTime comp : time.getComposicaoTime()) {
+
+        if (comp.getIntegrante() == null)
+          continue;
+
+        String funcao = comp.getIntegrante().getFuncao();
+
+        if (funcao == null)
+          continue;
+
+        contagem.put(funcao, contagem.getOrDefault(funcao, 0) + 1);
+      }
+    }
+
+    String maisComum = null;
+    int maior = 0;
+
+    for (Map.Entry<String, Integer> entry : contagem.entrySet()) {
+      if (entry.getValue() > maior) {
+        maior = entry.getValue();
+        maisComum = entry.getKey();
+      }
+    }
+    return maisComum;
   }
 
   /**
