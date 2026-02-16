@@ -7,4 +7,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface IntegranteRepository extends JpaRepository<Integrante, Long> {
 
+  boolean existsByNomeAndFuncaoAndFranquia(String nome, String funcao, String franquia);
+
+  Integrante findByNomeAndFuncaoAndFranquia(String nome, String funcao, String franquia);
 }
