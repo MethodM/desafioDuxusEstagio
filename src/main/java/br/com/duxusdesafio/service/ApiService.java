@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Service que possuirá as regras de negócio para o processamento dos dados
@@ -22,30 +21,26 @@ import java.util.stream.Collectors;
 public class ApiService {
 
   private List<Time> filtrarTimesPorPeriodo(LocalDate dataInicio, LocalDate dataFim, List<Time> todosOsTimes) {
-    if (todosOsTimes == null)
-      throw new IllegalArgumentException("Lista de times não pode ser nula");
-    return todosOsTimes.stream().filter(time -> {
-          LocalDate data = time.getData();
-
-          if (dataInicio != null && data.isBefore(dataInicio))
-            return false;
-          if (dataFim != null && data.isAfter(dataFim))
-            return false;
-
-          return true;
-
-        })
-        .collect(Collectors.toList());
+    return null;
   }
 
   /**
    * Vai retornar um Time, com a composição do time daquela data
    */
   public Time timeDaData(LocalDate data, List<Time> todosOsTimes) {
-    // TODO Implementar método seguindo as instruções!
-    assert data != null : "Data não pode ser nula";
-    return null;
+    if (data == null)
+      throw new IllegalArgumentException("Data não pode ser nula");
+
+    if (todosOsTimes == null)
+      throw new IllegalArgumentException("Lista de times não pode ser nula");
+
+    return todosOsTimes.stream()
+        .filter(time -> time.getData() != null)
+        .filter(time -> time.getData().isEqual(data))
+        .findFirst()
+        .orElse(null);
   }
+
 
   /**
    * Vai retornar o integrante que estiver presente na maior quantidade de times
@@ -77,25 +72,8 @@ public class ApiService {
    * Vai retornar o nome da Franquia mais comum nos times dentro do período
    */
   public String franquiaMaisFamosa(LocalDate dataInicial, LocalDate dataFinal, List<Time> todosOsTimes) {
-    // Validações iniciais
-    if (dataInicial == null || dataFinal == null) {
-      throw new IllegalArgumentException("Data inicial e data final não podem ser nulas");
-    }
-    if (todosOsTimes == null) {
-      return null;
-    }
-
-    // Filtra os times pelo período, percorre as composições, extrai os integrantes e suas franquias,
-    // agrupa por franquia e retorna a franquia com maior contagem.
-    return filtrarTimesPorPeriodo(dataInicial, dataFinal, todosOsTimes).stream()
-        .flatMap(time -> time.getComposicaoTime() == null ? java.util.stream.Stream.empty() : time.getComposicaoTime().stream())
-        .map(composicao -> composicao.getIntegrante())
-        .map(integrante -> integrante.getFranquia())
-        .collect(Collectors.groupingBy(franquia -> franquia, Collectors.counting()))
-        .entrySet().stream()
-        .max(Map.Entry.comparingByValue())
-        .map(Map.Entry::getKey)
-        .orElse("");
+    // TODO Implementar método seguindo as instruções!
+    return null;
   }
 
 
@@ -114,4 +92,5 @@ public class ApiService {
     // TODO Implementar método seguindo as instruções!
     return null;
   }
+
 }
