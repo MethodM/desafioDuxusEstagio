@@ -18,9 +18,16 @@ public class TimeService {
   }
 
   public Time cadastrarTime(String nomeTime, LocalDate data){
+    if(timeRepository.existsByNome(nomeTime)){
+      return timeRepository.findByNome(nomeTime);
+    }
     Time time = new Time();
-    time.setNomeTime(nomeTime);
+    time.setNome(nomeTime);
     time.setData(data);
     return timeRepository.save(time);
+  }
+
+  public void deletarTime(Long id) {
+    timeRepository.deleteById(id);
   }
 }
