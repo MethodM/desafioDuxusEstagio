@@ -1,7 +1,9 @@
 package br.com.duxusdesafio.controller;
 
 import br.com.duxusdesafio.controller.request.CadastroTimeRequest;
+import br.com.duxusdesafio.controller.request.IntegrantesRequest;
 import br.com.duxusdesafio.controller.request.TimeVencedorSemanaRequest;
+import br.com.duxusdesafio.model.Integrante;
 import br.com.duxusdesafio.model.Time;
 import br.com.duxusdesafio.service.ComposicaoTimeService;
 import br.com.duxusdesafio.service.IntegranteService;
@@ -44,7 +46,7 @@ public class TimeController {
 
   @DeleteMapping("/removerTime/{id}")
   public ResponseEntity<?> removerTime(@PathVariable Long id) {
-//    timeService.deletarTime(id);
+    timeService.deletarTime(id);
     return ResponseEntity.ok("Time removido com sucesso");
   }
 
@@ -52,14 +54,14 @@ public class TimeController {
   public ResponseEntity<?> timeVencedorSemana(@RequestBody TimeVencedorSemanaRequest timeVencedorSemanaRequest) {
     Time time = timeService.cadastrarTime(timeVencedorSemanaRequest.getNomeTime(), timeVencedorSemanaRequest.getData());
 
-//    for(IntegrantesRequest integrantesRequest : timeVencedorSemanaRequest.getIntegrantes()){
-//      Integrante integrante = integranteService.cadastraOuRetorna(
-//          integrantesRequest.getNome(),
-//          integrantesRequest.getFuncao(),
-//          integrantesRequest.getFranquia());
-//
-//      composicaoTimeService.create(time, integrante);
-//    }
+    for(IntegrantesRequest integrantesRequest : timeVencedorSemanaRequest.getIntegrantes()){
+      Integrante integrante = integranteService.cadastraOuRetorna(
+          integrantesRequest.getNome(),
+          integrantesRequest.getFuncao(),
+          integrantesRequest.getFranquia());
+
+      composicaoTimeService.create(time, integrante);
+    }
     //TODO retornar algo
     return null;
   }
