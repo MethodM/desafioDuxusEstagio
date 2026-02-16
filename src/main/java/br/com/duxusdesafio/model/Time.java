@@ -14,7 +14,7 @@ public class Time {
   private long id;
 
   @Column
-  private String nomeTime;
+  private String nome;
 
   @Column
   private LocalDate data;
@@ -38,11 +38,11 @@ public class Time {
     this.id = id;
   }
 
-  public String getNomeTime() {
-    return nomeTime;
+  public String getNome() {
+    return nome;
   }
-  public void setNomeTime(String nomeTime) {
-    this.nomeTime = nomeTime;
+  public void setNome(String nome) {
+    this.nome = nome;
   }
 
   public LocalDate getData() {
