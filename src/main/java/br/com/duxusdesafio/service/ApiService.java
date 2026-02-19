@@ -74,19 +74,19 @@ public class ApiService {
 
     List<Time> filtrados = filtrarTimesPorPeriodo(dataInicial, dataFinal, todosOsTimes);
 
-      if (filtrados == null)
-        return null;
+    if (filtrados == null)
+      return null;
 
-      for (Time time : filtrados) {
+    for (Time time : filtrados) {
 
-        if (time.getComposicaoTime() == null)
+      if (time.getComposicaoTime() == null)
+        continue;
+
+      for (ComposicaoTime composicaoTime : time.getComposicaoTime()) {
+        Integrante player1 = composicaoTime.getIntegrante();
+        if (player1 == null)
           continue;
-
-        for(ComposicaoTime composicaoTime : time.getComposicaoTime()) {
-          Integrante player1 = composicaoTime.getIntegrante();
-          if (player1 == null)
-            continue;
-          contagem.put(player1, contagem.getOrDefault(player1, 0) + 1);
+        contagem.put(player1, contagem.getOrDefault(player1, 0) + 1);
       }
     }
     Integrante maisUsado = null;
@@ -156,7 +156,7 @@ public class ApiService {
   public String funcaoMaisComum(LocalDate dataInicial, LocalDate dataFinal, List<Time> todosOsTimes) {
     // preciso retornar a função mais comum nos times dentro do período
     if (todosOsTimes == null) {
-      throw new IllegalArgumentException ("Lista de times não pode ser nula!");
+      throw new IllegalArgumentException("Lista de times não pode ser nula!");
     }
     Map<String, Integer> contagem = new HashMap<>();
     List<Time> timesFiltrados = filtrarTimesPorPeriodo(dataInicial, dataFinal, todosOsTimes);
@@ -199,25 +199,117 @@ public class ApiService {
    * Vai retornar o nome da Franquia mais comum nos times dentro do período
    */
   public String franquiaMaisFamosa(LocalDate dataInicial, LocalDate dataFinal, List<Time> todosOsTimes) {
-    // TODO Implementar método seguindo as instruções!
-    return null;
-  }
+    if (todosOsTimes == null) {
+      throw new IllegalArgumentException("Lista de times não pode ser nula!");
+    }
+    Map<String, Integer> contagemMaisFamosa = new HashMap<>();
+    List<Time> timesFiltrados = filtrarTimesPorPeriodo(dataInicial, dataFinal, todosOsTimes);
 
+    if (timesFiltrados == null || timesFiltrados.isEmpty())
+      return null;
+
+    for (Time time : timesFiltrados) {
+
+      if (time.getComposicaoTime() == null)
+        continue;
+
+      for (ComposicaoTime comp : time.getComposicaoTime()) {
+        Integrante integrante = comp.getIntegrante();
+
+        if (comp.getIntegrante() == null)
+          continue;
+
+        String franquia = integrante.getFranquia();
+
+        if (franquia == null)
+          continue;
+        contagemMaisFamosa.put(franquia, contagemMaisFamosa.getOrDefault(franquia, 0) + 1);
+      }
+    }
+
+    String maisFamosa = null;
+    int maior = 0;
+
+    for (Map.Entry<String, Integer> entry : contagemMaisFamosa.entrySet()) {
+      if (entry.getValue() > maior) {
+        maior = entry.getValue();
+        maisFamosa = entry.getKey();
+      }
+    }
+    return maisFamosa;
+  }
 
   /**
    * Vai retornar o número (quantidade) de Franquias dentro do período
    */
   public Map<String, Long> contagemPorFranquia(LocalDate dataInicial, LocalDate dataFinal, List<Time> todosOsTimes) {
-    // TODO Implementar método seguindo as instruções!
-    return null;
+    //Preciso retornar o número (quantidade) de Franquias dentro do período
+
+    //Tratar valores nulos e vazios
+    if (todosOsTimes == null) {
+      throw new IllegalArgumentException("Lista de times não pode ser nula!");
+    }
+
+    Map<String, Long> contagem = new HashMap<>();
+
+    List<Time> timesFiltrados = filtrarTimesPorPeriodo(dataInicial, dataFinal, todosOsTimes);
+
+    if (timesFiltrados == null || timesFiltrados.isEmpty())
+      return contagem;
+
+    for (Time time : timesFiltrados) {
+      if (time.getComposicaoTime() == null) {
+        continue;
+      }
+      for (ComposicaoTime comp : time.getComposicaoTime()) {
+        if (comp.getIntegrante() == null) {
+          continue;
+        }
+        String franquia = comp.getIntegrante().getFranquia();
+
+        if (franquia == null) {
+          continue;
+        }
+        contagem.put(franquia, contagem.getOrDefault(franquia, 0L) + 1);
+      }
+    }
+    return contagem;
   }
 
   /**
    * Vai retornar o número (quantidade) de Funções dentro do período
    */
   public Map<String, Long> contagemPorFuncao(LocalDate dataInicial, LocalDate dataFinal, List<Time> todosOsTimes) {
-    // TODO Implementar método seguindo as instruções!
-    return null;
-  }
+    // Preciso retornar o número (quantidade) de Funções dentro do período
+    if (todosOsTimes == null) {
+      throw new IllegalArgumentException("Lista de times não pode ser nula!");
+    }
+    if (dataInicial == null || dataFinal == null) {
+      throw new IllegalArgumentException("Data inicial e data final não podem ser nulas");
+    }
+    Map<String, Long> contagem = new HashMap<>();
 
+    List<Time> timesFiltrados = filtrarTimesPorPeriodo(dataInicial, dataFinal, todosOsTimes);
+
+    if (timesFiltrados.isEmpty())
+      return contagem;
+
+    for (Time time : timesFiltrados) {
+      if (time.getComposicaoTime() == null) {
+        continue;
+      }
+      for (ComposicaoTime comp : time.getComposicaoTime()) {
+        if (comp.getIntegrante() == null) {
+          continue;
+        }
+        String funcao = comp.getIntegrante().getFuncao();
+
+        if (funcao == null) {
+          continue;
+        }
+        contagem.put(funcao, contagem.getOrDefault(funcao, 0L) + 1);
+      }
+    }
+    return contagem;
+  }
 }
