@@ -36,8 +36,6 @@ public class TimeController {
     this.composicaoTimeService = composicaoTimeService;
   }
 
-  //TODO: Implementar os endpoints para criar, listar, atualizar e deletar times
-
   @PostMapping("/cadastroTime")
   public ResponseEntity<?> cadastroDeTime(@RequestBody CadastroTimeRequest time) {
     timeService.cadastrarTime(time.getNomeTime(), time.getData());
@@ -47,14 +45,15 @@ public class TimeController {
   @DeleteMapping("/removerTime/{id}")
   public ResponseEntity<?> removerTime(@PathVariable Long id) {
     timeService.deletarTime(id);
-    return ResponseEntity.ok("Time removido com sucesso");
+    return ResponseEntity.ok("Time " + id + " removido com sucesso");
   }
 
+  //Endpoint para cadastrar time. Para cada integrante o sistema verifica se já existe um integrante com o mesmo nome, função e franquia.
   @PostMapping("/timeVencedorSemana")
   public ResponseEntity<?> timeVencedorSemana(@RequestBody TimeVencedorSemanaRequest timeVencedorSemanaRequest) {
     Time time = timeService.cadastrarTime(timeVencedorSemanaRequest.getNomeTime(), timeVencedorSemanaRequest.getData());
 
-    for(IntegrantesRequest integrantesRequest : timeVencedorSemanaRequest.getIntegrantes()){
+    for (IntegrantesRequest integrantesRequest : timeVencedorSemanaRequest.getIntegrantes()) {
       Integrante integrante = integranteService.cadastraOuRetorna(
           integrantesRequest.getNome(),
           integrantesRequest.getFuncao(),
@@ -62,7 +61,6 @@ public class TimeController {
 
       composicaoTimeService.create(time, integrante);
     }
-    //TODO retornar algo
-    return null;
+    return ResponseEntity.ok("timeVencedorSemana salvo com sucesso");
   }
 }
