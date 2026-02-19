@@ -3,6 +3,14 @@
 API REST desenvolvida em **Spring Boot** para gerenciamento de Times,
 Integrantes e estatísticas baseadas em períodos.
 
+Inicialmente foi feito Teste de Mesa, implementações de testes e estrutura base da API
+
+- Testes de endpoints realizados via Postman iniciando pelos controllers
+- Implementação dos métodos necessários para atender regras de negócio
+- Criação de services e DTOs de response
+- Configuração de banco H2 em memória para persistência temporária
+- Ajustes para validação das funcionalidades exigidas
+
 ------------------------------------------------------------------------
 
 ## 🚀 Como executar
