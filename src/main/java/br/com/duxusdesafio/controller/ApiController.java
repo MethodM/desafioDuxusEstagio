@@ -18,6 +18,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -119,4 +120,54 @@ public class ApiController {
 
     return ResponseEntity.ok(funcao);
   }
+
+  @GetMapping("/franquiaMaisFamosa")
+  public ResponseEntity<?> getFranquiaMaisFamosa(
+      @RequestParam String dataInicial,
+      @RequestParam String dataFinal) {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    LocalDate inicio = LocalDate.parse(dataInicial, formatter);
+    LocalDate fim = LocalDate.parse(dataFinal, formatter);
+
+    List<Time> todosOsTimes = timeRepository.findAll();
+
+    String franquia = apiService.franquiaMaisFamosa(inicio, fim, todosOsTimes);
+
+    return ResponseEntity.ok(franquia);
+  }
+
+  @GetMapping("/contagemPorFranquia")
+  public ResponseEntity<Map<String, Long>> getContagemPorFranquia(
+      @RequestParam String dataInicial,
+      @RequestParam String dataFinal) {
+
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    LocalDate inicioContagem = LocalDate.parse(dataInicial, formatter);
+    LocalDate fimContagem = LocalDate.parse(dataFinal, formatter);
+
+    List<Time> todosOsTimes = timeRepository.findAll();
+
+    Map<String, Long> contagemPorFranquia = apiService.contagemPorFranquia(inicioContagem, fimContagem, todosOsTimes);
+
+    return ResponseEntity.ok(contagemPorFranquia);
+  }
+
+  @GetMapping("/contagemPorFuncao")
+  public ResponseEntity<?> getContagemPorFuncao(
+      @RequestParam String dataInicial,
+      @RequestParam String dataFinal) {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    LocalDate inicioContagem = LocalDate.parse(dataInicial, formatter);
+    LocalDate fimContagem = LocalDate.parse(dataFinal, formatter);
+
+    List<Time> todosOsTimes = timeRepository.findAll();
+
+    Map<String, Long> contagemPorFuncao = apiService.contagemPorFuncao(inicioContagem, fimContagem, todosOsTimes);
+
+    return ResponseEntity.ok(contagemPorFuncao);
+  }
+
 }
